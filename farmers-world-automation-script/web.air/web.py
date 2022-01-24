@@ -5,7 +5,7 @@ from airtest.core.api import *
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
+# from selenium.common.exceptions import NoSuchElementException
 from airtest_selenium.proxy import WebChrome
 
 using("log.air")
@@ -62,9 +62,15 @@ def enter_map(map_name):
         driver.implicitly_wait(20)
         driver.find_element_by_xpath("//span[@style='background-image: url(\"./img/" + map_imgs[map_name] + "\"); filter: grayscale(0);']").click()
         driver.implicitly_wait(20)
-    except NoSuchElementException as nsee:
-        logger.debug(nsee)
-        return False
+    except Exception as ex:
+        logger.debug(ex)
+    
+def popup_confirm():
+    """弹窗确认"""
+    try:
+        driver.find_element_by_xpath("/html/body/div[2]/div/div[2]/button/div").click()
+    except Exception as ex:
+        logger.debug(ex)
 
 # 进入 Mining
 def mining_water():
@@ -99,8 +105,8 @@ def loop_plant_water():
                     driver.find_element_by_xpath("//*[@id=\"root\"]/div/div/div/div/section/div/div/div[2]/div[3]/div/button/div").click()
                     driver.implicitly_wait(20)
                     sleep(10)
-        except NoSuchElementException as nsee:
-            logger.debug(nsee)
+        except Exception as ex:
+            logger.debug(ex)
 
     energy = get_energy() # 再次获取能量
     if energy > 200 and energy != 500: # 如果能量大于200 说明点击有问题或遗漏，需要重新点击一次
@@ -126,9 +132,8 @@ def plant_water():
             driver.implicitly_wait(20)
             driver.find_element_by_xpath("/html/body/div[2]/div/div[3]/button/div").click()
             driver.implicitly_wait(20)
-    except NoSuchElementException as nsee:
-        logger.debug(nsee)
-        return False
+    except Exception as ex:
+            logger.debug(ex)
 
 # 进入 Cow
 def cow_water():
@@ -140,7 +145,7 @@ def loop_action():
     while True:
         plant_water()
         cow_water();
-        sleep(30)
+        sleep(300)
 
 loop_action()
 
