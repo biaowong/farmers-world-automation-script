@@ -47,7 +47,16 @@ def login_wax_wallet():
     sleep(60)
     # 回到最初窗口
     driver.switch_to_window(original_window)
-
+    
+def popup_confirm():
+    """弹窗确认"""
+    try:
+        # 调用底层 loop_find_element(self, func, text, timeout=10, interval=0.5): 方法
+        # 会有 10 秒时间去寻找元素，即如无弹窗，会延迟 10 秒执行下一环节
+        driver.find_element_by_xpath("/html/body/div[2]/div/div[2]/button/div").click()
+    except Exception as ex:
+        logger.debug(ex)
+        
 def enter_map(map_name):
     """进入地图"""
     map_imgs = {
@@ -56,19 +65,14 @@ def enter_map(map_name):
         'plant': 'crop-map.jpg',
         'cow': 'cow-map.jpg'
     }
+    
+    popup_confirm() # 关闭弹窗
 
     try:
         driver.find_element_by_xpath("//img[@src='/Map.png']").click()
         driver.implicitly_wait(20)
         driver.find_element_by_xpath("//span[@style='background-image: url(\"./img/" + map_imgs[map_name] + "\"); filter: grayscale(0);']").click()
         driver.implicitly_wait(20)
-    except Exception as ex:
-        logger.debug(ex)
-    
-def popup_confirm():
-    """弹窗确认"""
-    try:
-        driver.find_element_by_xpath("/html/body/div[2]/div/div[2]/button/div").click()
     except Exception as ex:
         logger.debug(ex)
 
@@ -85,6 +89,7 @@ def chicken_water():
 # Plant 相关
 def get_energy():
     """获取能量"""
+    popup_confirm() # 关闭弹窗
     return int(driver.find_element_by_xpath("//*[@id=\"root\"]/div/div/div[1]/section[1]/div[5]/div[2]/div").get_attribute("innerHTML"))
 
 def loop_plant_water():
@@ -104,7 +109,7 @@ def loop_plant_water():
                 if water_time == "00:00:00":
                     driver.find_element_by_xpath("//*[@id=\"root\"]/div/div/div/div/section/div/div/div[2]/div[3]/div/button/div").click()
                     driver.implicitly_wait(20)
-                    sleep(10)
+                    sleep(5)
         except Exception as ex:
             logger.debug(ex)
 
@@ -143,7 +148,7 @@ def cow_water():
 def loop_action():
     """循环执行任务"""
     while True:
-        plant_water()
+        plant_water() # 植物浇水
         cow_water();
         sleep(300)
 
